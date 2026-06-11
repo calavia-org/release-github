@@ -44,9 +44,16 @@ Pre-commit hooks:
 - `conventional-pre-commit` — enforces conventional commits on commit-msg
 - `markdownlint` — markdown linting
 
-## Branch Protection
+## Contributing
 
-Direct commits to `main`, `master`, and `release/*` are protected branches. PRs are required for all changes to these branches. Use feature branches:
+### Protected Branches
+
+Direct commits to `main`, `master`, and `release/*` are protected. All changes must go through PRs.
+
+### Branch Naming
+
+Use conventional prefixes to clarify intent:
+
 - `feat/` — new features (triggers minor version bump)
 - `fix/` — bug fixes (triggers patch version bump)
 - `chore/` — maintenance (no version bump)
@@ -57,22 +64,14 @@ Direct commits to `main`, `master`, and `release/*` are protected branches. PRs 
 - `perf/` — performance improvements (skip release)
 - `ci/` — CI/CD changes (skip release)
 
-## PR Conventions
+### PR Title Format
 
 All repositories using this action are configured with:
 - **Linear history** (no merge commits)
 - **Squash commits** (PR titles become commit messages)
 - **PR title as commit message** (the squash commit uses the PR title)
 
-**Always use conventional commit format in PR titles.** The PR title will become the commit message after squash, and the release action will parse it to determine version bumps.
-
-Since `main`, `master`, and `release/*` branches are protected, all changes must go through PRs. This ensures:
-- Code review before merging
-- Consistent commit history using conventional commits
-- Proper version bumping based on PR titles
-- Pre-commit checks pass before merging
-
-### PR Title Format
+Always use conventional commit format in PR titles:
 
 ```
 type(scope): description
@@ -83,24 +82,6 @@ Examples:
 - `fix(api): handle null response from endpoint`
 - `docs(readme): update installation instructions`
 - `chore(deps): bump dependencies`
-- `refactor(utils): simplify validation logic`
-- `test(auth): add integration tests for login`
-- `style(css): fix indentation in components`
-- `perf(query): optimize database queries`
-- `ci(github): add codeql workflow`
-
-### Branch Naming
-
-Use conventional prefixes in branch names to clarify intent:
-- `feat/` — new features (triggers minor version bump)
-- `fix/` — bug fixes (triggers patch version bump)
-- `chore/` — maintenance (no version bump)
-- `docs/` — documentation changes (skip release)
-- `refactor/` — code restructuring (skip release)
-- `test/` — test additions/changes (skip release)
-- `style/` — formatting changes (skip release)
-- `perf/` — performance improvements (skip release)
-- `ci/` — CI/CD changes (skip release)
 
 ### Why This Matters
 
@@ -115,15 +96,18 @@ If your PR title doesn't follow conventional commit format, the action will auto
 
 - **Source of truth**: Git tags (`v1.0.0`, `v1.1.0`, etc.)
 - **Floating tags**: `v1`, `v2` — point to latest in major line
-- **Bump rules**: Conventional commits determine bump type (feat=minor, fix=patch, BREAKING=major)
+- **Bump rules**: Conventional commits determine bump type:
+  - `fix:` → patch (`v1.0.0` → `v1.0.1`)
+  - `feat:` → minor (`v1.0.0` → `v1.1.0`)
+  - `feat!:` or `BREAKING CHANGE:` → major (`v1.0.0` → `v2.0.0`)
 
-## Skipping Releases
+### Skipping Releases
 
-You can configure the action to skip releases for specific conventional commit types. This is useful for documentation changes, chores, or other commits that shouldn't trigger a release.
+You can configure the action to skip releases for specific conventional commit types.
 
-### Input: `skip-release-types`
+**Input: `skip-release-types`**
 
-A comma-separated list of conventional commit types that should skip the release. For example:
+A comma-separated list of conventional commit types that should skip the release:
 
 ```yaml
 - uses: calavia-org/release-github@v1
@@ -132,13 +116,9 @@ A comma-separated list of conventional commit types that should skip the release
     github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-When the latest commit matches one of the specified types (e.g., `docs: update README`), the action will:
-- Skip tag creation
-- Skip release creation
-- Skip floating major tag update
-- Skip maintenance branch creation
+When the latest commit matches one of the specified types (e.g., `docs: update README`), the action will skip tag creation, release creation, floating major tag update, and maintenance branch creation.
 
-### Output: `skipped`
+**Output: `skipped`**
 
 The action outputs a `skipped` field that indicates whether the release was skipped:
 

@@ -10,6 +10,7 @@ A GitHub Action for creating releases with semantic versioning and automatic mai
 - Automatic `release/X.x` branch creation on major releases
 - Support for custom version input
 - Artifact upload support
+- Configurable skip-release-types for non-release commits
 
 ## Usage
 
@@ -62,7 +63,7 @@ steps:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### Draft Release
+### Skip Release for Docs/Chores
 
 ```yaml
 steps:
@@ -73,7 +74,7 @@ steps:
   - name: Release
     uses: calavia-org/release-github@v1
     with:
-      draft: 'true'
+      skip-release-types: 'docs,chore,style,refactor'
       github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -88,6 +89,7 @@ steps:
 | `draft` | Create as draft release | `false` |
 | `prerelease` | Mark as prerelease | `false` |
 | `create-maintenance-branch` | Create `release/X.x` on major releases | `true` |
+| `skip-release-types` | Comma-separated commit types to skip (e.g., `docs,chore`) | None |
 | `github-token` | GitHub token with write permissions | Required |
 
 ## Outputs
@@ -101,6 +103,7 @@ steps:
 | `release-type` | Release type: `major`, `minor`, `patch`, or `custom` |
 | `changelog` | Auto-generated changelog from conventional commits |
 | `maintenance-branch` | Created maintenance branch (e.g., `release/1.x`) |
+| `skipped` | Whether the release was skipped (`true`/`false`) |
 
 ## Maintenance Branches
 
@@ -134,7 +137,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Conventional Commits
+## Versioning
 
 This action uses [conventional commits](https://www.conventionalcommits.org/) for version bumping:
 
